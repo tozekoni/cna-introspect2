@@ -1,0 +1,30 @@
+[
+  {
+    "claimId": "CLAIM001",
+    "noteId": "NOTE1001",
+    "author": "Adjuster1",
+    "timestamp": "2024-05-02T10:15:00Z",
+    "content": "Initial claim submitted. Awaiting documentation from claimant."
+  },
+  {
+    "claimId": "CLAIM002",
+    "noteId": "NOTE1002",
+    "author": "Adjuster2",
+    "timestamp": "2024-05-04T09:30:00Z",
+    "content": "Received photos of damage. Scheduling inspection."
+  },
+  {
+    "claimId": "CLAIM003",
+    "noteId": "NOTE1003",
+    "author": "Adjuster3",
+    "timestamp": "2024-05-06T14:45:00Z",
+    "content": "All documents verified. Claim approved for payment."
+  },
+  {
+    "claimId": "CLAIM004",
+    "noteId": "NOTE1004",
+    "author": "Adjuster1",
+    "timestamp": "2024-05-08T11:20:00Z",
+    "content": "Claim denied due to insufficient coverage."
+  }
+]

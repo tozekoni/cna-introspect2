@@ -1,0 +1,42 @@
+[
+  {
+    "id": "CLAIM001",
+    "policyNumber": "POL123456",
+    "status": "submitted",
+    "claimant": "Alice Smith",
+    "dateFiled": "2024-05-01",
+    "amount": 1200.50
+  },
+  {
+    "id": "CLAIM002",
+    "policyNumber": "POL654321",
+    "status": "under_review",
+    "claimant": "Bob Johnson",
+    "dateFiled": "2024-05-03",
+    "amount": 2500.00
+  },
+  {
+    "id": "CLAIM003",
+    "policyNumber": "POL111222",
+    "status": "approved",
+    "claimant": "Carol Lee",
+    "dateFiled": "2024-05-05",
+    "amount": 800.00
+  },
+  {
+    "id": "CLAIM004",
+    "policyNumber": "POL333444",
+    "status": "denied",
+    "claimant": "David Kim",
+    "dateFiled": "2024-05-07",
+    "amount": 1500.75
+  },
+  {
+    "id": "CLAIM005",
+    "policyNumber": "POL555666",
+    "status": "submitted",
+    "claimant": "Eva Green",
+    "dateFiled": "2024-05-10",
+    "amount": 950.00
+  }
+]
