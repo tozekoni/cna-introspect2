@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: claim-service
-          image: ${IMAGE_URI}
+          # TODO: Parameterize image URL
+          image: 658691121449.dkr.ecr.us-east-1.amazonaws.com/claim-app:latest
           ports:
             - containerPort: 3000
           resources:

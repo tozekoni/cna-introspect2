@@ -21,6 +21,10 @@ resource "random_id" "suffix" {
   byte_length = 4
 }
 
+data "aws_eks_cluster" "tz_cluster_cna2" {
+  name = "tz-cluster-cna2"
+}
+
 resource "aws_iam_role" "codebuild_role" {
   name = "claim-app-codebuild-role"
   assume_role_policy = jsonencode({
@@ -205,9 +209,33 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "ecr:GetAuthorizationToken"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ]
+        Resource = data.aws_eks_cluster.tz_cluster_cna2.arn
       }
     ]
   })
+}
+
+resource "aws_eks_access_entry" "codepipeline" {
+  cluster_name  = data.aws_eks_cluster.tz_cluster_cna2.name
+  principal_arn = aws_iam_role.codepipeline_role.arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "codepipeline" {
+  cluster_name  = data.aws_eks_cluster.tz_cluster_cna2.name
+  principal_arn = aws_iam_role.codepipeline_role.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
 }
 
 resource "aws_codepipeline" "claim_app_pipeline" {
@@ -218,11 +246,6 @@ resource "aws_codepipeline" "claim_app_pipeline" {
   artifact_store {
     location = aws_s3_bucket.codepipeline_artifacts.bucket
     type     = "S3"
-  }
-
-  variable {
-    name = "IMAGE_URI"
-    default_value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
   }
 
   stage {
@@ -291,11 +314,21 @@ resource "aws_codepipeline" "claim_app_pipeline" {
       owner    = "AWS"
       provider = "EKS"
       version  = "1"
-      input_artifacts = ["build_output"]
+      input_artifacts = ["source_output"]
 
       configuration = {
-        ClusterName = "tz-cluster-cna2"
+        ClusterName  = data.aws_eks_cluster.tz_cluster_cna2.name
         ManifestFiles = "src/k8s/deployment.yaml"
+        # EnvironmentVariables = jsonencode([
+        #   {
+        #     name  = "IMAGE_URI"
+        #     value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
+        #     type  = "PLAINTEXT"
+        #   }
+        # ])
+        # Variables     = jsonencode({
+        #   IMAGE_URI = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
+        # })
       }
 
     }
