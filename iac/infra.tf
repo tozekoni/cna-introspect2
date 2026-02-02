@@ -319,16 +319,6 @@ resource "aws_codepipeline" "claim_app_pipeline" {
       configuration = {
         ClusterName  = data.aws_eks_cluster.tz_cluster_cna2.name
         ManifestFiles = "src/k8s/deployment.yaml"
-        # EnvironmentVariables = jsonencode([
-        #   {
-        #     name  = "IMAGE_URI"
-        #     value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
-        #     type  = "PLAINTEXT"
-        #   }
-        # ])
-        # Variables     = jsonencode({
-        #   IMAGE_URI = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
-        # })
       }
 
     }
