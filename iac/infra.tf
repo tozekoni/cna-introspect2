@@ -181,6 +181,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
 resource "aws_codepipeline" "claim_app_pipeline" {
   name     = "claim-app-pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
+  pipeline_type = "V2"
 
   artifact_store {
     location = aws_s3_bucket.codepipeline_artifacts.bucket
@@ -220,6 +221,26 @@ resource "aws_codepipeline" "claim_app_pipeline" {
 
       configuration = {
         ProjectName = aws_codebuild_project.claim_app_build.name
+      }
+    }
+  }
+
+  stage {
+    name = "Scan"
+
+    action {
+      category = "Invoke"
+      name     = "Scan"
+      owner    = "AWS"
+      provider = "InspectorScan"
+      input_artifacts = ["build_output"]
+      output_artifacts = ["scan_output"]
+      version  = "1"
+
+      configuration = {
+        InspectorRunMode: "ECRImageScan"
+        ECRRepositoryName: aws_ecr_repository.claim-app.name
+        ImageTag: "latest"
       }
     }
   }
