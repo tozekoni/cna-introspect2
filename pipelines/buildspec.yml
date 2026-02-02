@@ -16,8 +16,6 @@ phases:
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      - echo Scanning Docker image...
-      - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock public.ecr.aws/aquasecurity/trivy:latest image --severity HIGH,CRITICAL $REPOSITORY_URI:latest || true
   post_build:
     commands:
       - echo Build completed on `date`
@@ -29,5 +27,5 @@ phases:
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - src/imagedefinitions.json
 

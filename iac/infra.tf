@@ -12,6 +12,11 @@ resource "aws_s3_bucket" "claim_notes" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket" "codepipeline_artifacts" {
+  bucket        = "claim-notes-codepipeline-artifacts-${random_id.suffix.hex}"
+  force_destroy = true
+}
+
 resource "random_id" "suffix" {
   byte_length = 4
 }
@@ -73,7 +78,7 @@ resource "aws_codebuild_project" "claim_app_build" {
   service_role  = aws_iam_role.codebuild_role.arn
 
   artifacts {
-    type = "NO_ARTIFACTS"
+    type = "CODEPIPELINE"
   }
 
   environment {
@@ -105,15 +110,15 @@ resource "aws_codebuild_project" "claim_app_build" {
   }
 
   source {
-    type            = "GITHUB"
-    location        = "https://github.com/tozekoni/cna-introspect2.git"
-    git_clone_depth = 1
+    type            = "CODEPIPELINE"
+    # location        = "https://github.com/tozekoni/cna-introspect2.git"
+    # git_clone_depth = 1
     buildspec       = "pipelines/buildspec.yml"
-
-    auth {
-      resource = aws_codestarconnections_connection.github.arn
-      type     = "CODECONNECTIONS"
-    }
+    #
+    # auth {
+    #   resource = aws_codestarconnections_connection.github.arn
+    #   type     = "CODECONNECTIONS"
+    # }
   }
 }
 
@@ -122,4 +127,101 @@ data "aws_caller_identity" "current" {}
 resource "aws_codestarconnections_connection" "github" {
   name          = "github-connection"
   provider_type = "GitHub"
+}
+
+resource "aws_iam_role" "codepipeline_role" {
+  name = "claim-app-codepipeline-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "codepipeline.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "codepipeline_policy" {
+  name = "claim-app-codepipeline-policy"
+  role = aws_iam_role.codepipeline_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "codebuild:*"
+        ]
+        Resource = aws_codebuild_project.claim_app_build.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:PutObject"
+        ]
+        Resource = "${aws_s3_bucket.codepipeline_artifacts.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "codestar-connections:UseConnection",
+          "codestar-connections:GetConnection",
+          "codestar-connections:GetConnectionToken"
+        ]
+        Resource = aws_codestarconnections_connection.github.arn
+      }
+    ]
+  })
+}
+
+resource "aws_codepipeline" "claim_app_pipeline" {
+  name     = "claim-app-pipeline"
+  role_arn = aws_iam_role.codepipeline_role.arn
+
+  artifact_store {
+    location = aws_s3_bucket.codepipeline_artifacts.bucket
+    type     = "S3"
+  }
+
+  stage {
+    name = "Source"
+
+    action {
+      name             = "Source"
+      category         = "Source"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
+      version          = "1"
+      output_artifacts = ["source_output"]
+
+      configuration = {
+        ConnectionArn = aws_codestarconnections_connection.github.arn
+        FullRepositoryId = "tozekoni/cna-introspect2"
+        BranchName = "main"
+      }
+    }
+  }
+
+  stage {
+    name = "Build"
+
+    action {
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_output"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.claim_app_build.name
+      }
+    }
+  }
+
 }
