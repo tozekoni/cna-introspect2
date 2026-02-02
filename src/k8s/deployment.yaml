@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claim-service-deployment
+  labels:
+    app: claim-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: claim-service
+  template:
+    metadata:
+      labels:
+        app: claim-service
+    spec:
+      containers:
+        - name: claim-service
+          image: ${IMAGE_URI}
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "300Mi"
+              cpu: "250m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: claim-service
+spec:
+  selector:
+    app: claim-service
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -173,6 +173,38 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "codestar-connections:GetConnectionToken"
         ]
         Resource = aws_codestarconnections_connection.github.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/codepipeline/claim-app-pipeline:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "inspector-scan:ScanSbom"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability"
+        ]
+        Resource = aws_ecr_repository.claim-app.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -186,6 +218,11 @@ resource "aws_codepipeline" "claim_app_pipeline" {
   artifact_store {
     location = aws_s3_bucket.codepipeline_artifacts.bucket
     type     = "S3"
+  }
+
+  variable {
+    name = "IMAGE_URI"
+    default_value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.us-east-1.amazonaws.com/${aws_ecr_repository.claim-app.name}:latest"
   }
 
   stage {
@@ -242,6 +279,25 @@ resource "aws_codepipeline" "claim_app_pipeline" {
         ECRRepositoryName: aws_ecr_repository.claim-app.name
         ImageTag: "latest"
       }
+    }
+  }
+
+  stage {
+    name = "DeployApp"
+
+    action {
+      category = "Deploy"
+      name     = "DeployApp"
+      owner    = "AWS"
+      provider = "EKS"
+      version  = "1"
+      input_artifacts = ["build_output"]
+
+      configuration = {
+        ClusterName = "tz-cluster-cna2"
+        ManifestFiles = "src/k8s/deployment.yaml"
+      }
+
     }
   }
 
