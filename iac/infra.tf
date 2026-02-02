@@ -325,3 +325,9 @@ resource "aws_codepipeline" "claim_app_pipeline" {
   }
 
 }
+
+
+resource "aws_apigatewayv2_api" "api_gw" {
+  name          = "claim-app-api-gw"
+  protocol_type = "HTTP"
+}
