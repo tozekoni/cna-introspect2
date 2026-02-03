@@ -284,7 +284,7 @@ resource "aws_codepipeline" "claim_app_pipeline" {
 
       configuration = {
         ClusterName  = data.aws_eks_cluster.tz_cluster_cna2.name
-        ManifestFiles = "dist/deployment.yamll"
+        ManifestFiles = "dist/deployment.yaml"
       }
 
     }
