@@ -16,8 +16,9 @@ phases:
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - mkdir -p ../dist
       - export IMG_URL=$REPOSITORY_URI:$IMAGE_TAG
-      - envsubst < ../src/k8s/deployment.yaml > dist/deployment.yaml
+      - envsubst < k8s/deployment.yaml > ../dist/deployment.yaml
   post_build:
     commands:
       - echo Build completed on `date`
