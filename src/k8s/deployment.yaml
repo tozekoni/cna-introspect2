@@ -16,28 +16,10 @@ spec:
     spec:
       containers:
         - name: claim-service
-          # TODO: Parameterize image URL
-          image: 658691121449.dkr.ecr.us-east-1.amazonaws.com/claim-app:latest
+          image: ${IMG_URL}
           ports:
             - containerPort: 3000
           resources:
             requests:
               memory: "300Mi"
               cpu: "250m"
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: claim-service
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-spec:
-  type: LoadBalancer
-  selector:
-    app: claim-service
-  ports:
-    - protocol: TCP
-      port: 3000
-      targetPort: 3000
