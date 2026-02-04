@@ -3,9 +3,9 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 const client = new S3Client({ region: "us-east-1" });
 
 const uploadClaimNotes = async (notes) => {
-    notes.each(async (note) => {
+    await Promise.all(notes.map(async (note) => {
         await uploadSingleClaimNote(note.claimId, JSON.stringify(note));
-    });
+    }));
 }
 
 const uploadSingleClaimNote = async (claimId, noteContent) => {

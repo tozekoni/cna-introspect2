@@ -36,7 +36,6 @@ app.post('/api/claims', asyncHandler(async (req, res) => {
 }));
 
 app.post('/api/claimNotes', asyncHandler(async (req, res) => {
-    console.log(req.body)
     res.json(await uploadClaimNotes(req.body));
 }));
 
