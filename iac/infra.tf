@@ -90,11 +90,33 @@ resource "aws_apigatewayv2_stage" "default" {
 resource "aws_dynamodb_table" "claims" {
   name         = "claims-table"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "pk"
+  hash_key     = "id"
 
   attribute {
-    name = "pk"
+    name = "id"
     type = "S"
+  }
+
+  attribute {
+    name = "policyNumber"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "policyNumber-index"
+    hash_key        = "policyNumber"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "status-index"
+    hash_key        = "status"
+    projection_type = "ALL"
   }
 }
 
