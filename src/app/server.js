@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import {getClaim, insertClaims} from "./dynamodb.js";
+import asyncHandler from 'express-async-handler';
 
 const app = express();
 
@@ -25,13 +26,13 @@ app.get('/api/test', (req, res) => {
     });
 });
 
-app.get('/api/claims/:id',async (req, res) => {
+app.get('/api/claims/:id', asyncHandler(async (req, res) => {
     res.json(await getClaim(req.params.id));
-});
+}));
 
-app.post('/api/claims',async (req, res) => {
+app.post('/api/claims', asyncHandler(async (req, res) => {
     res.json(await insertClaims(req.body));
-});
+}));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
