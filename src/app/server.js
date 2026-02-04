@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import {getClaim, insertClaims} from "./dynamodb.js";
 import asyncHandler from 'express-async-handler';
-import {uploadClaimNotes} from "./s3.js";
+import {uploadClaimNotes, getClaimNotes} from "./s3.js";
+import {summarizeClaimNotes} from "./bedrock.js";
 
 const app = express();
 
@@ -29,6 +30,13 @@ app.get('/api/test', (req, res) => {
 
 app.get('/api/claims/:id', asyncHandler(async (req, res) => {
     res.json(await getClaim(req.params.id));
+}));
+
+app.post('/api/claims/:id/summarize', asyncHandler(async (req, res) => {
+    const claimId = req.params.id;
+    const claim = await getClaim(claimId);
+    const notes = getClaimNotes(claimId);
+    res.json(await summarizeClaimNotes(claim, notes));
 }));
 
 app.post('/api/claims', asyncHandler(async (req, res) => {

@@ -1,7 +1,8 @@
 import {BatchWriteCommand, DynamoDBDocumentClient, GetCommand} from "@aws-sdk/lib-dynamodb";
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
+import {REGION} from "./config.js";
 
-const client = new DynamoDBClient({region: "us-east-1"});
+const client = new DynamoDBClient({region: REGION});
 const docClient = DynamoDBDocumentClient.from(client);
 
 const getClaim = async (id) => {

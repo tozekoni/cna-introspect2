@@ -1,6 +1,18 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {BUCKET_NAME, REGION} from "./config.js";
 
-const client = new S3Client({ region: "us-east-1" });
+const client = new S3Client({region: REGION});
+
+const getKey = (claimId) => `claim/${claimId}/notes.json`;
+
+const getClaimNotes = async (claimId) => {
+    const input = { // GetObjectRequest
+        Bucket: BUCKET_NAME,
+        Key: getKey(claimId),
+    };
+    const command = new GetObjectCommand(input);
+    return await client.send(command);
+}
 
 const uploadClaimNotes = async (notes) => {
     await Promise.all(notes.map(async (note) => {
@@ -11,13 +23,13 @@ const uploadClaimNotes = async (notes) => {
 const uploadSingleClaimNote = async (claimId, noteContent) => {
     const input = { // PutObjectRequest
         Body: noteContent,
-        Bucket: 'claim-notes-bucket',
+        Bucket: BUCKET_NAME,
         ContentType: "application/json",
-        Key: `claim/${claimId}/notes.json`,
+        Key: getKey(claimId),
     };
 
     const command = new PutObjectCommand(input);
     return await client.send(command);
 }
 
-export {uploadClaimNotes};
+export {uploadClaimNotes, getClaimNotes};
