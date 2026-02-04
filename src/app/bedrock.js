@@ -36,7 +36,6 @@ ${notes}
 
 
     const response = await client.send(new ConverseCommand(request));
-    const body = JSON.parse(new TextDecoder().decode(response.body));
-
-    return body.content[0].text;
+    console.log(response);
+    return response;
 }
