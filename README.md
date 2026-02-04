@@ -18,3 +18,9 @@ terraform init
 ## apply will output api gateway endpoint url
 terraform apply
 ```
+
+
+# insert claim data
+```bash
+curl --header "Content-Type: application/json" --request POST --data @../mocks/claims.json https://2rwm9ygzsb.execute-api.us-east-1.amazonaws.com/api/claims
+```

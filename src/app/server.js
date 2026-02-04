@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import {getClaims} from "./dynamodb.js";
+import {getClaim, insertClaims} from "./dynamodb.js";
 
 const app = express();
 
@@ -25,8 +25,12 @@ app.get('/api/test', (req, res) => {
     });
 });
 
-app.get('/api/claims', (req, res) => {
-    res.json(getClaims(10));
+app.get('/api/claims/:id', (req, res) => {
+    res.json(getClaim(req.params.id));
+});
+
+app.post('/api/claims', (req, res) => {
+    res.json(insertClaims(req.body));
 });
 
 // Error handling middleware

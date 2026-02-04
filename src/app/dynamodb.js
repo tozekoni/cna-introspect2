@@ -1,19 +1,37 @@
-import {DynamoDBDocumentClient, QueryCommand} from "@aws-sdk/lib-dynamodb";
+import {DynamoDBDocumentClient, BatchWriteCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({region: "us-east-1"});
 const docClient = DynamoDBDocumentClient.from(client);
 
-const getClaims = async (count) => {
-    const params = {
+const getClaim = async (id) => {
+    const command = new GetCommand({
         TableName: "claims-table",
-        PageSize: count,
-    };
-    const data = await docClient.send(new QueryCommand(params));
-    console.log("Query Results:", data);
-    return data.Items;
+        Key: {
+            Id: "id",
+        },
+    });
+    const response = await docClient.send(command);
+    console.log(response);
+    return response;
 };
 
+const insertClaims = async (claims) => {
+    const putRequests = claims.map((claim) => ({
+        PutRequest: {
+            TableName: "claims-table",
+            Item: claim,
+        },
+    }));
+
+    const command = new BatchWriteCommand({
+        RequestItems: putRequests,
+    });
+
+    await docClient.send(command);
+}
+
 export {
-    getClaims
+    getClaim,
+    insertClaims
 };
