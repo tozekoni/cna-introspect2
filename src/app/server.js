@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import {getClaim, insertClaims} from "./dynamodb.js";
 import asyncHandler from 'express-async-handler';
+import {uploadClaimNotes} from "./s3.js";
 
 const app = express();
 
@@ -32,6 +33,10 @@ app.get('/api/claims/:id', asyncHandler(async (req, res) => {
 
 app.post('/api/claims', asyncHandler(async (req, res) => {
     res.json(await insertClaims(req.body));
+}));
+
+app.post('/api/claimNotes', asyncHandler(async (req, res) => {
+    res.json(await uploadClaimNotes(req.body));
 }));
 
 // Error handling middleware
