@@ -4,7 +4,6 @@ import {MODEL_ID, REGION} from "./config.js";
 const client = new BedrockRuntimeClient({region: REGION});
 
 export async function summarizeClaimNotes(claim, notes) {
-    console.log('will summarize notes for claim:', claim, notes);
     const prompt = `
 You are an insurance claims assistant.
 
@@ -13,6 +12,8 @@ Given the following claim notes, generate:
 2. Customer-facing summary
 3. Adjuster-focused summary
 4. Recommended next step
+
+Result must be in json format with fields for each response.
 
 Claim in json format:
 ${JSON.stringify(claim)}
