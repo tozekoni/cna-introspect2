@@ -12,7 +12,7 @@ const getClaimNotes = async (claimId) => {
     };
     const command = new GetObjectCommand(input);
     const response = await client.send(command);
-    const bodyString = response.Body.transformToString();
+    const bodyString = await response.Body.transformToString();
     return JSON.parse(bodyString);
 }
 
