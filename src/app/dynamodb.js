@@ -5,10 +5,11 @@ const client = new DynamoDBClient({region: "us-east-1"});
 const docClient = DynamoDBDocumentClient.from(client);
 
 const getClaim = async (id) => {
+    console.log('Received id:', id);
     const command = new GetCommand({
         TableName: "claims-table",
         Key: {
-            Id: "id",
+            id: "id",
         },
     });
     const response = await docClient.send(command);
@@ -17,7 +18,6 @@ const getClaim = async (id) => {
 };
 
 const insertClaims = async (claims) => {
-    console.log('Inserting claims:', claims);
     const putRequests = claims.map((claim) => ({
         PutRequest: {
             TableName: "claims-table",
