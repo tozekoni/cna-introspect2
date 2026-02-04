@@ -11,3 +11,10 @@ eksctl create cluster -f iac/eks-cluster.yaml
 ```bash
 kubectl apply -f k8s/service.yaml
 ```
+
+# Setup rest of infra
+```bash
+terraform init
+## apply will output api gateway endpoint url
+terraform apply
+```
