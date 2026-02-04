@@ -13,8 +13,8 @@ const getClaim = async (id) => {
         },
     });
     const response = await docClient.send(command);
-    console.log(response);
-    return response;
+    console.log(response.Item);
+    return response.Item;
 };
 
 const insertClaims = async (claims) => {
