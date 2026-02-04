@@ -28,11 +28,12 @@ ${notes}
             messages: [
                 {
                     role: "user",
-                    content: [{type: "text", text: prompt}]
+                    content: prompt
                 }
             ]
         })
     });
+
 
     const response = await client.send(command);
     const body = JSON.parse(new TextDecoder().decode(response.body));
