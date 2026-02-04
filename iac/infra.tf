@@ -85,6 +85,29 @@ resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.api_gw.id
   name        = "$default"
   auto_deploy = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw.arn
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      routeKey       = "$context.routeKey"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
+      responseLength = "$context.responseLength"
+      errorMessage   = "$context.error.message"
+      integrationError = "$context.integrationErrorMessage"
+    })
+  }
+
+  default_route_settings {
+    detailed_metrics_enabled = true
+    logging_level           = "INFO"
+    throttling_burst_limit  = 5000
+    throttling_rate_limit   = 10000
+  }
 }
 
 resource "aws_dynamodb_table" "claims" {
@@ -159,6 +182,25 @@ resource "aws_iam_policy" "pod_access_policy" {
         Resource = [
           "arn:aws:bedrock:*::foundation-model/amazon.nova-pro-*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -213,4 +255,44 @@ resource "kubernetes_service_account_v1" "claims_app_sa" {
     namespace = "default"
 
   }
+}
+
+resource "aws_cloudwatch_log_group" "api_gw" {
+  name              = "/aws/apigateway/${aws_apigatewayv2_api.api_gw.name}"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_dashboard" "claims_app" {
+  dashboard_name = "claims-app-dashboard"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type = "metric"
+        properties = {
+          metrics = [
+            ["ClaimsApp", "RequestDuration", { stat = "Average" }],
+            ["...", { stat = "p99" }]
+          ]
+          period = 300
+          stat   = "Average"
+          region = var.region
+          title  = "API Response Times"
+        }
+      },
+      {
+        type = "metric"
+        properties = {
+          metrics = [
+            ["AWS/ApiGateway", "Count", { stat = "Sum" }],
+            [".", "4XXError", { stat = "Sum" }],
+            [".", "5XXError", { stat = "Sum" }]
+          ]
+          period = 300
+          region = var.region
+          title  = "API Gateway Metrics"
+        }
+      }
+    ]
+  })
 }

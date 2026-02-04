@@ -2,14 +2,22 @@ import express from 'express';
 import cors from 'cors';
 import {getClaim, insertClaims} from "./dynamodb.js";
 import asyncHandler from 'express-async-handler';
-import {uploadClaimNotes, getClaimNotes} from "./s3.js";
+import {getClaimNotes, uploadClaimNotes} from "./s3.js";
 import {summarizeClaimNotes} from "./bedrock.js";
+import {CloudWatchClient, PutMetricDataCommand} from "@aws-sdk/client-cloudwatch";
+import {REGION} from "./config.js";
+import AWSXRay from 'aws-xray-sdk';
+
 
 const app = express();
+const xrayExpress = AWSXRay.express;
+const cloudwatch = new CloudWatchClient({region: REGION});
+
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(xrayExpress.openSegment('defaultName'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -56,5 +64,38 @@ app.use((err, req, res, next) => {
         error: 'Something went wrong!'
     });
 });
+
+// Metrics middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+
+    res.on('finish', async () => {
+        const duration = Date.now() - start;
+
+        try {
+            await cloudwatch.send(new PutMetricDataCommand({
+                Namespace: 'ClaimsApp',
+                MetricData: [
+                    {
+                        MetricName: 'RequestDuration',
+                        Value: duration,
+                        Unit: 'Milliseconds',
+                        Dimensions: [
+                            {Name: 'Endpoint', Value: req.path},
+                            {Name: 'Method', Value: req.method},
+                            {Name: 'StatusCode', Value: res.statusCode.toString()}
+                        ]
+                    }
+                ]
+            }));
+        } catch (err) {
+            console.error('Failed to send metrics:', err);
+        }
+    });
+
+    next();
+});
+
+app.use(xrayExpress.closeSegment());
 
 export default app;
