@@ -1,4 +1,4 @@
-import {BedrockRuntimeClient, InvokeModelCommand} from "@aws-sdk/client-bedrock-runtime";
+import {BedrockRuntimeClient, ConversationRole, ConverseCommand,} from "@aws-sdk/client-bedrock-runtime";
 import {MODEL_ID, REGION} from "./config.js";
 
 const client = new BedrockRuntimeClient({region: REGION});
@@ -20,22 +20,22 @@ Claim notes:
 ${notes}
 `;
 
-    const command = new InvokeModelCommand({
+    const message = {
+        content: [{text: prompt}],
+        role: ConversationRole.USER,
+    };
+
+    const request = {
         modelId: MODEL_ID,
-        contentType: "application/json",
-        accept: "application/json",
-        body: JSON.stringify({
-            messages: [
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ]
-        })
-    });
+        messages: [message],
+        inferenceConfig: {
+            maxTokens: 8000,
+            temperature: 0.5,
+        },
+    };
 
 
-    const response = await client.send(command);
+    const response = await client.send(new ConverseCommand(request));
     const body = JSON.parse(new TextDecoder().decode(response.body));
 
     return body.content[0].text;
