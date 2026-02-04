@@ -41,7 +41,7 @@ resource "aws_ecr_repository" "claim-app" {
 }
 
 resource "aws_s3_bucket" "claim_notes" {
-  bucket        = "claim-notes-bucket-${random_id.suffix.hex}"
+  bucket        = "claim-notes-bucket"
   force_destroy = true
 }
 
@@ -141,6 +141,24 @@ resource "aws_iam_policy" "pod_access_policy" {
           "dynamodb:Scan"
         ]
         Resource = aws_dynamodb_table.claims.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = "${aws_s3_bucket.claim_notes.arn}/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:InvokeModel",
+          "bedrock:InvokeModelWithResponseStream"
+        ]
+        Resource = [
+          "arn:aws:bedrock:*::foundation-model/amazon.nova-pro-*"
+        ]
       }
     ]
   })

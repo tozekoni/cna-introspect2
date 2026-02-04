@@ -27,4 +27,9 @@ curl --header "Content-Type: application/json" --request POST \
   --data @../mocks/claims.json \
   https://2rwm9ygzsb.execute-api.us-east-1.amazonaws.com/api/claims
   
+
+curl --header "Content-Type: application/json" --request POST \
+  --data @../mocks/notes.json \
+  https://2rwm9ygzsb.execute-api.us-east-1.amazonaws.com/api/claimNotes
+  
 ```

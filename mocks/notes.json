@@ -4,27 +4,34 @@
     "noteId": "NOTE1001",
     "author": "Adjuster1",
     "timestamp": "2024-05-02T10:15:00Z",
-    "content": "Initial claim submitted. Awaiting documentation from claimant."
+    "content": "Initial claim submitted. Awaiting documentation from claimant. The policyholder has been contacted via email and phone to request proof of loss forms. We have set a 14-day deadline for document submission. Follow-up scheduled for May 16th if no response is received."
   },
   {
     "claimId": "CLAIM002",
     "noteId": "NOTE1002",
     "author": "Adjuster2",
     "timestamp": "2024-05-04T09:30:00Z",
-    "content": "Received photos of damage. Scheduling inspection."
+    "content": "Received photos of damage. Scheduling inspection. The submitted photographs clearly show water damage to the basement and ground floor areas. An independent inspector has been assigned and will contact the claimant within 48 hours. Preliminary estimate suggests moderate structural damage requiring further assessment."
   },
   {
     "claimId": "CLAIM003",
     "noteId": "NOTE1003",
     "author": "Adjuster3",
     "timestamp": "2024-05-06T14:45:00Z",
-    "content": "All documents verified. Claim approved for payment."
+    "content": "All documents verified. Claim approved for payment. The submitted receipts, police report, and witness statements have been cross-referenced and validated. Payment of $12,500 has been authorized and will be processed within 5-7 business days. Claimant has been notified of the approval via certified mail."
   },
   {
     "claimId": "CLAIM004",
     "noteId": "NOTE1004",
     "author": "Adjuster1",
     "timestamp": "2024-05-08T11:20:00Z",
-    "content": "Claim denied due to insufficient coverage."
+    "content": "Claim denied due to insufficient coverage. The policy does not include flood damage protection, which is the primary cause of loss in this case. A detailed denial letter has been sent to the policyholder explaining the coverage limitations. The claimant has been informed of the 30-day appeal window and provided with instructions for the appeals process."
+  },
+  {
+    "claimId": "CLAIM005",
+    "noteId": "NOTE1005",
+    "author": "Adjuster2",
+    "timestamp": "2024-05-10T16:00:00Z",
+    "content": "New claim received. Preliminary review in progress. The claimant has reported vehicle theft from their residence. Police report number has been obtained and verification with local authorities is underway. Awaiting additional documentation including proof of ownership and vehicle registration."
   }
 ]
