@@ -9,7 +9,7 @@ const getClaim = async (id) => {
     const command = new GetCommand({
         TableName: "claims-table",
         Key: {
-            id: "id",
+            id,
         },
     });
     const response = await docClient.send(command);
