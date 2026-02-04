@@ -13,7 +13,7 @@ Given the following claim notes, generate:
 3. Adjuster-focused summary
 4. Recommended next step
 
-Result must be in json format with fields for each response.
+Result must be in json format with fields for each response. It must be parsable.
 
 Claim in json format:
 ${JSON.stringify(claim)}

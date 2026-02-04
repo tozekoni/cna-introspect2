@@ -37,7 +37,7 @@ app.post('/api/claims/:id/summarize', asyncHandler(async (req, res) => {
     const claim = await getClaim(claimId);
     const notes = await getClaimNotes(claimId);
     const result = await summarizeClaimNotes(claim, notes);
-    res.json(result.output.message.content);
+    res.json(JSON.parse(result.messages[0].content[0].text));
 }));
 
 app.post('/api/claims', asyncHandler(async (req, res) => {
