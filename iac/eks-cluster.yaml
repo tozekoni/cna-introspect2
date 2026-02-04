@@ -2,11 +2,14 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: tz-cluster-cna2
+  name: claims-eks-cluster
   region: us-east-1
   version: "1.34"
   tags:
-    karpenter.sh/discovery: tz-cluster-cna2
+    karpenter.sh/discovery: claims-eks-cluster
+
+iam:
+  withOIDC: true
 
 managedNodeGroups:
   - name: default
@@ -17,13 +20,12 @@ managedNodeGroups:
     privateNetworking: true
 
 addons:
+  - name: eks-pod-identity-agent
   - name: vpc-cni
     attachPolicyARNs:
       - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
   - name: coredns
-    version: latest
   - name: kube-proxy
-    version: latest
   - name: aws-ebs-csi-driver
     wellKnownPolicies:
       ebsCSIController: true

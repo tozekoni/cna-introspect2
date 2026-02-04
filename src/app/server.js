@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import {getClaims} from "./dynamodb.js";
 
 const app = express();
 
@@ -22,6 +23,10 @@ app.get('/api/test', (req, res) => {
         service: 'claims-service',
         timestamp: new Date().toISOString()
     });
+});
+
+app.get('/api/claims', (req, res) => {
+    res.json(getClaims(10));
 });
 
 // Error handling middleware

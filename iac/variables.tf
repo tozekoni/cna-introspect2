@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "cluster_name" {
-  default = "tz-cluster-cna2"
+  default = "claims-eks-cluster"
 }
 
 variable "service_name" {

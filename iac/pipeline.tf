@@ -81,7 +81,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "eks:DescribeCluster",
           "eks:ListClusters"
         ]
-        Resource = data.aws_eks_cluster.tz_cluster_cna2.arn
+        Resource = data.aws_eks_cluster.this.arn
       }
     ]
   })
@@ -189,13 +189,13 @@ resource "aws_codestarconnections_connection" "github" {
 }
 
 resource "aws_eks_access_entry" "codepipeline" {
-  cluster_name  = data.aws_eks_cluster.tz_cluster_cna2.name
+  cluster_name  = data.aws_eks_cluster.this.name
   principal_arn = aws_iam_role.codepipeline_role.arn
   type          = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "codepipeline" {
-  cluster_name  = data.aws_eks_cluster.tz_cluster_cna2.name
+  cluster_name  = data.aws_eks_cluster.this.name
   principal_arn = aws_iam_role.codepipeline_role.arn
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
@@ -283,7 +283,7 @@ resource "aws_codepipeline" "claim_app_pipeline" {
       input_artifacts = ["build_output"]
 
       configuration = {
-        ClusterName  = data.aws_eks_cluster.tz_cluster_cna2.name
+        ClusterName  = data.aws_eks_cluster.this.name
         ManifestFiles = "dist/deployment.yaml"
       }
 
