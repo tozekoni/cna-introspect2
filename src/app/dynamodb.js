@@ -1,4 +1,4 @@
-import {DynamoDBDocumentClient, BatchWriteCommand, GetCommand} from "@aws-sdk/lib-dynamodb";
+import {BatchWriteCommand, DynamoDBDocumentClient, GetCommand} from "@aws-sdk/lib-dynamodb";
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({region: "us-east-1"});
@@ -25,7 +25,7 @@ const insertClaims = async (claims) => {
     }));
 
     const command = new BatchWriteCommand({
-        RequestItems: putRequests,
+        RequestItems: {"claims-table": putRequests},
     });
 
     await docClient.send(command);
