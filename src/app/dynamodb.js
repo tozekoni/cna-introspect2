@@ -17,6 +17,7 @@ const getClaim = async (id) => {
 };
 
 const insertClaims = async (claims) => {
+    console.log('Inserting claims:', claims);
     const putRequests = claims.map((claim) => ({
         PutRequest: {
             TableName: "claims-table",

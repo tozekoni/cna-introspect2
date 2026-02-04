@@ -136,6 +136,7 @@ resource "aws_iam_policy" "pod_access_policy" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
+          "dynamodb:BatchWriteItem",
           "dynamodb:Query",
           "dynamodb:Scan"
         ]

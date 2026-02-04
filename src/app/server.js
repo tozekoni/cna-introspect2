@@ -25,12 +25,12 @@ app.get('/api/test', (req, res) => {
     });
 });
 
-app.get('/api/claims/:id', (req, res) => {
-    res.json(getClaim(req.params.id));
+app.get('/api/claims/:id',async (req, res) => {
+    res.json(await getClaim(req.params.id));
 });
 
-app.post('/api/claims', (req, res) => {
-    res.json(insertClaims(req.body));
+app.post('/api/claims',async (req, res) => {
+    res.json(await insertClaims(req.body));
 });
 
 // Error handling middleware
