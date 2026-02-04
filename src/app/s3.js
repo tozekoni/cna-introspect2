@@ -11,7 +11,9 @@ const getClaimNotes = async (claimId) => {
         Key: getKey(claimId),
     };
     const command = new GetObjectCommand(input);
-    return await client.send(command);
+    const response = await client.send(command);
+    const bodyString = response.Body.transformToString();
+    return JSON.parse(bodyString);
 }
 
 const uploadClaimNotes = async (notes) => {
