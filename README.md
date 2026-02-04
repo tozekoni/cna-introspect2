@@ -22,14 +22,22 @@ terraform apply
 
 # insert claim data
 ```bash
+## set to value from terraform output
+export GW_BASE_URL="<api-gateway-endpoint-url>"
 
 curl --header "Content-Type: application/json" --request POST \
   --data @../mocks/claims.json \
-  https://2rwm9ygzsb.execute-api.us-east-1.amazonaws.com/api/claims
+  "${GW_BASE_URL}/api/claims"
   
 
 curl --header "Content-Type: application/json" --request POST \
   --data @../mocks/notes.json \
-  https://2rwm9ygzsb.execute-api.us-east-1.amazonaws.com/api/claimNotes
+  "${GW_BASE_URL}/api/claimNotes"
   
+```
+
+# invoke summarize endpoint
+```bash
+curl --header "Content-Type: application/json" --request POST -i \
+  "${GW_BASE_URL}/api/claims/CLAIM001/summarize"
 ```

@@ -13,11 +13,11 @@ Given the following claim notes, generate:
 3. Adjuster-focused summary
 4. Recommended next step
 
-Claim:
-${claim}
+Claim in json format:
+${JSON.stringify(claim)}
 
-Claim notes:
-${notes}
+Claim notes in json format:
+${JSON.stringify(notes)}
 `;
 
     const message = {

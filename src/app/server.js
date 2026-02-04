@@ -35,7 +35,7 @@ app.get('/api/claims/:id', asyncHandler(async (req, res) => {
 app.post('/api/claims/:id/summarize', asyncHandler(async (req, res) => {
     const claimId = req.params.id;
     const claim = await getClaim(claimId);
-    const notes = getClaimNotes(claimId);
+    const notes = await getClaimNotes(claimId);
     res.json(await summarizeClaimNotes(claim, notes));
 }));
 
