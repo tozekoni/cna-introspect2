@@ -4,6 +4,7 @@ import {MODEL_ID, REGION} from "./config.js";
 const client = new BedrockRuntimeClient({region: REGION});
 
 export async function summarizeClaimNotes(claim, notes) {
+    console.log('will summarize notes for claim:', claim, notes);
     const prompt = `
 You are an insurance claims assistant.
 
