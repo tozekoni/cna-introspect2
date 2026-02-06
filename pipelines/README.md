@@ -4,6 +4,20 @@ This directory contains the build specification for the Claims Service CI/CD pip
 
 ---
 
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Pipeline Stages](#-pipeline-stages)
+- [Build Specification](#-build-specification)
+- [Environment Variables](#️-environment-variables)
+- [Infrastructure Reference](#️-infrastructure-reference)
+- [IAM Permissions](#-iam-permissions)
+- [Manual Trigger](#-manual-trigger)
+- [Monitoring](#-monitoring)
+- [Troubleshooting](#️-troubleshooting)
+
+---
+
 ## 📋 Overview
 
 The Claims Service uses **AWS CodePipeline** with **AWS CodeBuild** to automate the build, scan, and deployment process. The pipeline is triggered automatically on every push to the `main` branch.
