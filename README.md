@@ -7,6 +7,7 @@ An AI-powered insurance claims processing service that leverages AWS Bedrock (Am
 ## 📋 Table of Contents
 
 - [Architecture Overview](#architecture-overview)
+- [Architecture Reasoning & Trade-offs](#architecture-reasoning--trade-offs)
 - [Architecture Diagram](#architecture-diagram)
 - [Infrastructure Components](#infrastructure-components)
 - [Node.js Service Details](#nodejs-service-details)
@@ -26,6 +27,53 @@ The Claims Service is a cloud-native application deployed on AWS with the follow
 - **API Gateway**: AWS API Gateway (HTTP API) with VPC Link integration
 - **Observability**: AWS X-Ray tracing, CloudWatch metrics & dashboards
 - **CI/CD**: AWS CodePipeline with CodeBuild for automated deployments
+
+---
+
+## 🤔 Architecture Reasoning & Trade-offs
+
+### Why EKS over ECS or Lambda?
+
+| Factor | EKS | ECS | Lambda |
+|--------|-----|-----|--------|
+| **Container orchestration** | Full Kubernetes flexibility | AWS-native simplicity | No container management |
+| **Portability** | Multi-cloud compatible | AWS-locked | AWS-locked |
+| **Cold starts** | None | None | Significant for Node.js |
+| **Operational complexity** | Higher | Medium | Lower |
+
+**Decision**: EKS was chosen for Kubernetes portability, advanced scheduling, and long-running workloads that benefit from persistent containers (no cold starts for AI summarization requests).
+
+### Why DynamoDB + S3 over RDS?
+
+| Aspect | DynamoDB + S3 | RDS (PostgreSQL) |
+|--------|---------------|------------------|
+| **Scalability** | Automatic, serverless | Manual scaling required |
+| **Cost model** | Pay-per-request | Always-on instance costs |
+| **Claim notes storage** | S3 optimized for large JSON documents | JSONB column, limited size |
+| **Operational overhead** | Near zero | Backups, patching, failover |
+
+**Decision**: Claims metadata fits DynamoDB's key-value access patterns. Large claim notes (potentially MB-sized) are better suited for S3 with cheap storage and direct access.
+
+### Why API Gateway HTTP API over ALB?
+
+| Feature | HTTP API | ALB |
+|---------|----------|-----|
+| **Cost** | ~70% cheaper than REST API | Per-hour + LCU charges |
+| **Latency** | Lower latency | Higher latency |
+| **Features** | JWT auth, throttling, CORS | Full L7 features |
+| **VPC integration** | VPC Link required | Native |
+
+**Decision**: HTTP API provides cost-effective external access with built-in throttling (5000 burst/10000 rate). VPC Link ensures secure private connectivity to EKS NLB.
+
+### Potential Improvements
+
+| Current State | Future Consideration |
+|---------------|---------------------|
+| Single region deployment | Multi-region with Route 53 failover |
+| Synchronous AI summarization | Async processing with SQS for large batches |
+| Basic health checks | Liveness/readiness probes with circuit breakers |
+| 2 replicas fixed | Horizontal Pod Autoscaler based on CPU/memory |
+| CloudWatch only | Consider OpenTelemetry for vendor-neutral observability |
 
 ---
 
